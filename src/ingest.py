@@ -25,6 +25,8 @@ def main():
         file_path = glob.glob(os.path.join(path, pattern))[0]
         df = pd.read_csv(file_path, dtype=str)      # everything as text
         df["ingested_at"] = pd.Timestamp.now()
+        df["source_file"] = os.path.basename(file_path)
+        df["batch_id"] = pd.Timestamp.now().strftime("%Y%m%d%H%M%S")
         df.to_sql(table, engine, schema="bronze", if_exists="replace",
                   index=False, chunksize=50000)
         print(f"bronze.{table}: {len(df)} rows loaded")
